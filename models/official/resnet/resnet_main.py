@@ -467,20 +467,21 @@ def resnet_model_fn(features, labels, mode, params):
   # Calculate loss, which includes softmax cross entropy and L2 regularization.
   #one_hot_labels = tf.one_hot(labels, 2)
   one_hot_labels = labels
-  cross_entropy = tf.losses.softmax_cross_entropy(
-      logits=logits,
-      onehot_labels=one_hot_labels,
-      label_smoothing=params['label_smoothing'])
+  #cross_entropy = tf.losses.softmax_cross_entropy(
+  #    logits=logits,
+  #    onehot_labels=one_hot_labels,
+  #    label_smoothing=params['label_smoothing'])
+  cross_entropy = -tf.reduce_sum(one_hot_labels*tf.log(tf.clip_by_value(logits,1e-10,1.0)))
 
   # Add weight decay to the loss for non-batch-normalization variables.
-  if params['enable_lars']:
-    loss = cross_entropy
-  else:
-    loss = cross_entropy + params['weight_decay'] * tf.add_n([
-        tf.nn.l2_loss(v)
-        for v in tf.trainable_variables()
-        if 'batch_normalization' not in v.name and 'evonorm' not in v.name
-    ])
+  #if params['enable_lars']:
+  loss = cross_entropy
+  #else:
+  #  loss = cross_entropy + params['weight_decay'] * tf.add_n([
+  #      tf.nn.l2_loss(v)
+  #      for v in tf.trainable_variables()
+  #      if 'batch_normalization' not in v.name and 'evonorm' not in v.name
+  #  ])
 
   global_step = tf.train.get_global_step()
   if has_moving_average_decay:

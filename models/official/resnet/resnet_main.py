@@ -407,7 +407,7 @@ def resnet_model_fn(features, labels, mode, params):
   def build_network():
     network = resnet_model.resnet(
         resnet_depth=params['resnet_depth'],
-        num_classes=params['num_label_classes'],
+        num_classes=2,
         dropblock_size=params['dropblock_size'],
         dropblock_keep_probs=dropblock_keep_probs,
         pre_activation=params['pre_activation'],

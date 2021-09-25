@@ -16,3 +16,5 @@ __pycache__
 *.swp
 .vscode/
 *.tfrecord
+*.DESKTOP-5KC2G32
+models/official/resnet/training/*

@@ -64,7 +64,7 @@ flags.DEFINE_integer(
     'num_eval_images', default=None, help='Size of evaluation data set.')
 
 flags.DEFINE_integer(
-    'num_label_classes', default=None, help='Number of classes, at least 2')
+    'num_label_classes', default=2, help='Number of classes, at least 2')
 
 flags.DEFINE_string(
     'data_format', default=None,

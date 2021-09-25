@@ -471,7 +471,8 @@ def resnet_model_fn(features, labels, mode, params):
   #    logits=logits,
   #    onehot_labels=one_hot_labels,
   #    label_smoothing=params['label_smoothing'])
-  cross_entropy = -tf.reduce_sum(one_hot_labels*tf.log(tf.clip_by_value(logits,1e-10,1.0)))
+  cross_entropy = tf.nn.softmax_cross_entropy_with_logits(labels=one_hot_labels,logits=logits)
+  #cross_entropy = -tf.reduce_sum(one_hot_labels*tf.log(tf.clip_by_value(logits,1e-10,1.0)))
 
   # Add weight decay to the loss for non-batch-normalization variables.
   #if params['enable_lars']:

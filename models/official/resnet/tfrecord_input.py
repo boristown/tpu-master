@@ -107,7 +107,7 @@ class ImageNetTFExampleInput(object):
     return images, labels
 
   def replacenan(self,t):
-      return tf.where(tf.is_nan(t), tf.zeros_like(t), t)
+      return tf.clip_by_value(t,0,1)
 
   def dataset_parser(self, value):
     """Parses an image and its label from a serialized ResNet-50 TFExample.

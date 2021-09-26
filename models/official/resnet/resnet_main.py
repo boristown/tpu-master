@@ -529,7 +529,8 @@ def resnet_model_fn(features, labels, mode, params):
         train_op = ema.apply(ema_vars)
 
     if not params['skip_host_call']:
-      def host_call_fn(gs, loss, lr, ce):
+      #def host_call_fn(gs, loss, lr, ce):
+      def host_call_fn(gs, loss, ce):
         """Training host call. Creates scalar summaries for training metrics.
 
         This function is executed on the CPU and should not directly reference
@@ -575,7 +576,8 @@ def resnet_model_fn(features, labels, mode, params):
       #lr_t = tf.reshape(learning_rate, [1])
       ce_t = tf.reshape(current_epoch, [1])
 
-      host_call = (host_call_fn, [gs_t, loss_t, lr_t, ce_t])
+      #host_call = (host_call_fn, [gs_t, loss_t, lr_t, ce_t])
+      host_call = (host_call_fn, [gs_t, loss_t, ce_t])
 
   else:
     train_op = None

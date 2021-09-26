@@ -1,3 +1,2 @@
-cd D:\TPU\
-tensorboard --logdir="official\resnet\training\model"
+tensorboard --logdir="official\resnet\training\resnet10"
 pause

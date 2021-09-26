@@ -497,6 +497,8 @@ def resnet_model_fn(features, labels, mode, params):
     steps_per_epoch = params['num_train_images'] / params['train_batch_size']
     current_epoch = (tf.cast(global_step, tf.float32) /
                      steps_per_epoch)
+    
+    '''
     # LARS is a large batch optimizer. LARS enables higher accuracy at batch 16K
     # and larger batch sizes.
     if params['enable_lars']:
@@ -508,6 +510,8 @@ def resnet_model_fn(features, labels, mode, params):
           learning_rate=learning_rate,
           momentum=params['momentum'],
           use_nesterov=True)
+    '''
+    optimizer = tf.train.AdamOptimizer()
     if params['use_tpu']:
       # When using TPU, wrap the optimizer with CrossShardOptimizer which
       # handles synchronization details between different TPU cores. To the
@@ -556,7 +560,7 @@ def resnet_model_fn(features, labels, mode, params):
             max_queue=params['iterations_per_loop']).as_default():
           with tf2.summary.record_if(True):
             tf2.summary.scalar('loss', loss[0], step=gs)
-            tf2.summary.scalar('learning_rate', lr[0], step=gs)
+            #tf2.summary.scalar('learning_rate', lr[0], step=gs)
             tf2.summary.scalar('current_epoch', ce[0], step=gs)
 
           return tf.summary.all_v2_summary_ops()
@@ -568,7 +572,7 @@ def resnet_model_fn(features, labels, mode, params):
       # [params['batch_size']].
       gs_t = tf.reshape(global_step, [1])
       loss_t = tf.reshape(loss, [1])
-      lr_t = tf.reshape(learning_rate, [1])
+      #lr_t = tf.reshape(learning_rate, [1])
       ce_t = tf.reshape(current_epoch, [1])
 
       host_call = (host_call_fn, [gs_t, loss_t, lr_t, ce_t])

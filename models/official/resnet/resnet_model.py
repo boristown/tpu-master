@@ -770,26 +770,51 @@ def resnet_generator(block_fn,
     num_layers = len(layers) + 1
     stride_c2 = 2 if skip_stem_max_pool else 1
 
+    # inputs = custom_block_group(
+    #     inputs=inputs, filters=64, block_fn=block_fn, blocks=layers[0],
+    #     strides=stride_c2, is_training=is_training, name='block_group1',
+    #     dropblock_keep_prob=dropblock_keep_probs[0],
+    #     drop_connect_rate=resnet_layers.get_drop_connect_rate(
+    #         drop_connect_rate, 2, num_layers))
+    # inputs = custom_block_group(
+    #     inputs=inputs, filters=128, block_fn=block_fn, blocks=layers[1],
+    #     strides=2, is_training=is_training, name='block_group2',
+    #     dropblock_keep_prob=dropblock_keep_probs[1],
+    #     drop_connect_rate=resnet_layers.get_drop_connect_rate(
+    #         drop_connect_rate, 3, num_layers))
+    # inputs = custom_block_group(
+    #     inputs=inputs, filters=256, block_fn=block_fn, blocks=layers[2],
+    #     strides=2, is_training=is_training, name='block_group3',
+    #     dropblock_keep_prob=dropblock_keep_probs[2],
+    #     drop_connect_rate=resnet_layers.get_drop_connect_rate(
+    #         drop_connect_rate, 4, num_layers))
+    # inputs = custom_block_group(
+    #     inputs=inputs, filters=512, block_fn=block_fn, blocks=layers[3],
+    #     strides=2, is_training=is_training, name='block_group4',
+    #     dropblock_keep_prob=dropblock_keep_probs[3],
+    #     drop_connect_rate=resnet_layers.get_drop_connect_rate(
+    #         drop_connect_rate, 5, num_layers))
+
     inputs = custom_block_group(
-        inputs=inputs, filters=64, block_fn=block_fn, blocks=layers[0],
+        inputs=inputs, filters=16, block_fn=block_fn, blocks=layers[0],
         strides=stride_c2, is_training=is_training, name='block_group1',
         dropblock_keep_prob=dropblock_keep_probs[0],
         drop_connect_rate=resnet_layers.get_drop_connect_rate(
             drop_connect_rate, 2, num_layers))
     inputs = custom_block_group(
-        inputs=inputs, filters=128, block_fn=block_fn, blocks=layers[1],
+        inputs=inputs, filters=16, block_fn=block_fn, blocks=layers[1],
         strides=2, is_training=is_training, name='block_group2',
         dropblock_keep_prob=dropblock_keep_probs[1],
         drop_connect_rate=resnet_layers.get_drop_connect_rate(
             drop_connect_rate, 3, num_layers))
     inputs = custom_block_group(
-        inputs=inputs, filters=256, block_fn=block_fn, blocks=layers[2],
+        inputs=inputs, filters=16, block_fn=block_fn, blocks=layers[2],
         strides=2, is_training=is_training, name='block_group3',
         dropblock_keep_prob=dropblock_keep_probs[2],
         drop_connect_rate=resnet_layers.get_drop_connect_rate(
             drop_connect_rate, 4, num_layers))
     inputs = custom_block_group(
-        inputs=inputs, filters=512, block_fn=block_fn, blocks=layers[3],
+        inputs=inputs, filters=16, block_fn=block_fn, blocks=layers[3],
         strides=2, is_training=is_training, name='block_group4',
         dropblock_keep_prob=dropblock_keep_probs[3],
         drop_connect_rate=resnet_layers.get_drop_connect_rate(
@@ -809,8 +834,11 @@ def resnet_generator(block_fn,
         inputs=inputs, pool_size=pool_size, strides=1, padding='VALID',
         data_format=data_format)
     inputs = tf.identity(inputs, 'final_avg_pool')
+    
+    #inputs = tf.reshape(
+    #    inputs, [-1, 2048 if block_fn is bottleneck_block else 512])
     inputs = tf.reshape(
-        inputs, [-1, 2048 if block_fn is bottleneck_block else 512])
+        inputs, [-1, 2048 if block_fn is bottleneck_block else 16])
 
     if dropout_rate is not None:
       tf.logging.info('using dropout')
@@ -837,6 +865,7 @@ def resnet(resnet_depth, num_classes, data_format='channels_first',
            bn_momentum=MOVING_AVERAGE_DECAY):
   """Returns the ResNet model for a given size and number of output classes."""
   model_params = {
+      10: {'block': residual_block, 'layers': [1, 1, 1, 1]},
       18: {'block': residual_block, 'layers': [2, 2, 2, 2]},
       34: {'block': residual_block, 'layers': [3, 4, 6, 3]},
       50: {'block': bottleneck_block, 'layers': [3, 4, 6, 3]},
